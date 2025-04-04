@@ -16,6 +16,7 @@ composeBom = "2025.03.01"
 logbackClassicVersion = "1.4.14"
 room = "2.6.1"
 ksp = "2.1.20-1.0.32"
+secretsGradlePlugin = "2.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -45,6 +46,8 @@ ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+
+secrets-gradle-plugin = { module = "com.google.android.libraries.mapsplatform:secrets-gradle-plugin", version.ref = "secretsGradlePlugin" }
 
 
 [plugins]

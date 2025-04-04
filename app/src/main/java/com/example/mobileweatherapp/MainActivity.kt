@@ -45,3 +45,7 @@ fun GreetingPreview() {
         Greeting("Android")
     }
 }
+
+private fun fetchWeather() {
+    val apiKey = BuildConfig.OW_KEY
+}
