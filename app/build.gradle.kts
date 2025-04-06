@@ -68,25 +68,18 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-
-    implementation(libs.androidx.lifecycle.viewmodel.compose.v262)
-    implementation(libs.retrofit)
-    implementation(libs.converter.gson)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     // Ktor Client
     implementation(libs.ktor.client.core)
-    implementation(libs.ktor.client.android)
     implementation(libs.ktor.client.okhttp)
-    implementation(libs.ktor.serialization.kotlinx.json)
-    implementation(libs.ktor.client.logging)
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.serialization.gson)
-    implementation(libs.ktor.client.content.negotiation)
-    implementation(libs.kotlinx.serialization.json)
 
     // ROOM
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.runtime.livedata)
     ksp(libs.androidx.room.compiler)
 
     testImplementation(libs.junit)

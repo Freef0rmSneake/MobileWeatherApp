@@ -7,63 +7,76 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-// główne
+// Główna aktywność aplikacji
 class MainActivity : ComponentActivity() {
+    // ViewModel do komunikacji z danymi
     private val viewModel: WeatherViewModel by viewModels()
 
+    // Funkcja onCreate jest wywoływana podczas tworzenia aktywności
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Wygląd aplikacji przy użyciu Jetpack Compose
         setContent {
             MaterialTheme {
-                WeatherScreen(viewModel)
+                WeatherScreen(viewModel) // Pokazujemy ekran pogodowy
             }
         }
+
+        // Funkcja pobierająca dane o pogodzie dla Wrocławia
+        viewModel.getWeatherData("Wrocław")
     }
 }
 
-// Composable wyświetlający ekran pogody
+// Komponent, który wyświetla dane pogodowe
 @Composable
 fun WeatherScreen(viewModel: WeatherViewModel) {
-    val weather by viewModel.weather.collectAsState()
+    // Dane pogodowe z LiveData ViewModelu pobierają się
+    val weather by viewModel.weather.observeAsState()
 
+    // Jeśli dane są jeszcze ładowane (null), wyświetla się kółko ładowania
     if (weather == null) {
-        // Jeśli dane się jeszcze ładują
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
+            CircularProgressIndicator() // kółko ładowania
         }
     } else {
-        // Główna zawartość z danymi pogodowymi
+        // Gdy gotowe, dane się wyświetlają
         WeatherContent(weather = weather!!)
     }
 }
 
-// UI pokazujący dane pogodowe
+// Komponent, który wyświetla szczegóły pogodowe
 @Composable
 fun WeatherContent(weather: WeatherResponse) {
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
+            .fillMaxSize() // Wypełnia całą dostępna przestrzeń
+            .padding(24.dp), // Dodajemy odstępy
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        // Nazwa miasta
         Text("Miasto: ${weather.name}", style = MaterialTheme.typography.titleLarge)
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(12.dp)) // Odstęp między elementami
+        // Temperatura
         Text("Temperatura: ${weather.main.temp}°C")
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp)) // Odstęp
+        // Opis pogody
         Text("Opis: ${weather.weather.firstOrNull()?.description ?: "-"}")
     }
 }
 
-// Podgląd do edycji UI
+// Przykładowy widok
 @Preview(showBackground = true)
 @Composable
 fun PreviewWeatherScreen() {
+    // Przykładowe dane pogodowe
     val sampleWeather = WeatherResponse(
         name = "Wrocław",
         main = Main(temp = 22.5f),

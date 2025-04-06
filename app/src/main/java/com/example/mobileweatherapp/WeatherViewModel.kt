@@ -1,6 +1,8 @@
 package com.example.mobileweatherapp
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.ktor.client.*
@@ -10,45 +12,46 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.gson.*
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+// ViewModel do zarządzania stanem aplikacji i pobierania danych pogodowych
 class WeatherViewModel : ViewModel() {
 
-    private val _weather = MutableStateFlow<WeatherResponse?>(null)
-    val weather: StateFlow<WeatherResponse?> = _weather
+    // LiveData przechowujące dane o pogodzie, które mogą być obserwowane w UI
+    private val _weather = MutableLiveData<WeatherResponse?>()
+    val weather: LiveData<WeatherResponse?> = _weather
 
-    // Inicjalizacja Ktor Clienta z pluginem do JSONa
+    // Inicjalizacja Ktor Clienta, który będzie używany do zapytań HTTP
     private val client = HttpClient(OkHttp) {
         install(ContentNegotiation) {
-            gson()
+            gson()  // Używamy GSON do serializacji i deserializacji JSON
         }
     }
 
-    init {
-        getWeatherData("Wroclaw")
-    }
-
-    private fun getWeatherData(city: String) {
+    // Funkcja odpowiedzialna za pobieranie danych o pogodzie
+    fun getWeatherData(city: String) {
+        // Używamy viewModelScope, aby uruchomić zapytanie w tle
         viewModelScope.launch {
             try {
+                // Wysyłamy zapytanie do OpenWeather API
                 val response: WeatherResponse = client.get("https://api.openweathermap.org/data/2.5/weather") {
                     parameter("q", city)
-                    parameter("units", "metric")
-                    parameter("appid", BuildConfig.OW_KEY)
+                    parameter("units", "metric")  // Celsjusz
+                    parameter("appid", BuildConfig.OW_KEY)  // Użycie klucza API z BuildConfig
                     contentType(ContentType.Application.Json)
-                }.body()
+                }.body() // Otrzymujemy odpowiedź w postaci WeatherResponse
 
-                _weather.value = response
+                // Zapisujemy dane do LiveData
+                _weather.postValue(response)
             } catch (e: Exception) {
-                Log.e("WeatherViewModel", "Błąd Ktor: ${e.message}")
+                Log.e("WeatherViewModel", "Błąd: ${e.message}")
             }
         }
     }
 
+    // Funkcja wywoływana, gdy ViewModel jest niszczony, zamykamy wtedy klienta HTTP
     override fun onCleared() {
         super.onCleared()
-        client.close() // zamknij klienta przy zamykaniu ViewModelu
+        client.close()  // Zamknięcie klienta
     }
 }

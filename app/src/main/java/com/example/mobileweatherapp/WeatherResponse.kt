@@ -1,19 +1,19 @@
 package com.example.mobileweatherapp
 
-// Główna odpowiedź z OpenWeather API
+// Klasa reprezentująca odpowiedź z OpenWeatherAPI
 data class WeatherResponse(
-    val name: String,           // Miasto
-    val main: Main,             // Informacje pogodowe (temperatura)
+    val name: String,           // Nazwa miasta
+    val main: Main,             // Informacje pogodowe (np. temperatura)
     val weather: List<Weather>  // Lista warunków pogodowych (opis, ikona)
 )
 
-// Dane o temperaturze i innych parametrach
+// Klasa reprezentująca dane o temperaturze
 data class Main(
     val temp: Float             // Temperatura w °C
 )
 
-// Dane o stanie pogody
+// Klasa reprezentująca opis warunków pogodowych (np. "słonecznie")
 data class Weather(
-    val description: String,    // Opis
-    val icon: String            // Ikona
+    val description: String,    // Opis (np. "pochmurno")
+    val icon: String            // Ikona (np. "01d" – słońce)
 )
