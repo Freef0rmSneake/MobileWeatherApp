@@ -50,6 +50,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     // kotlin {
     //     sourceSets.main {
@@ -68,12 +69,15 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
+    implementation(libs.androidx.lifecycle.viewmodel.compose.v262)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+
     // Ktor Client
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.android)
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.ktor.client.logging)
-    implementation(libs.ch.logback.classic)
     implementation(libs.kotlinx.serialization.json)
 
     // ROOM
