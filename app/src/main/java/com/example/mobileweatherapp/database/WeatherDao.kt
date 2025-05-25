@@ -3,7 +3,7 @@ package com.example.mobileweatherapp.database
 import androidx.room.*
 
 @Dao
-interface WeatherDao {
+internal interface WeatherDao {
     @Query("SELECT * FROM weather_cache WHERE cityName = :city")
     suspend fun getWeatherForCity(city: String): Weather?
 

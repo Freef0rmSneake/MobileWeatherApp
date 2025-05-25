@@ -1,13 +1,13 @@
 package com.example.mobileweatherapp.backend
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.mobileweatherapp.WeatherApplication
 import com.example.mobileweatherapp.database.Weather
-import com.example.mobileweatherapp.database.WeatherDatabase
+import com.example.mobileweatherapp.frontend.model.WeatherData
 import io.ktor.client.*
 import io.ktor.client.engine.okhttp.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -18,8 +18,8 @@ import kotlinx.coroutines.launch
 class WeatherViewModel(application: Application) : AndroidViewModel(application) {
 
     // LiveData przechowujące dane o pogodzie, które mogą być obserwowane w UI
-    private val _weather = MutableLiveData<Weather?>()
-    val weather: LiveData<Weather?> = _weather
+    private val _weather = MutableLiveData<WeatherData?>()
+    val weather: LiveData<WeatherData?> = _weather
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
@@ -37,7 +37,8 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     private val repository: WeatherRepository
 
     init {
-        val weatherDao = WeatherDatabase.getDatabase(application).weatherDao()
+        val app = getApplication<WeatherApplication>()
+        val weatherDao = app.database.weatherDao()
         repository = WeatherRepository(weatherDao, client)
         
         // Clear old cache on startup
@@ -46,13 +47,22 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+    private fun mapToWeatherData(weather: Weather): WeatherData {
+        return WeatherData(
+            cityName = weather.cityName,
+            temperature = weather.temperature,
+            description = weather.description,
+            icon = weather.icon
+        )
+    }
+
     fun getWeatherData(city: String) {
         viewModelScope.launch {
             try {
                 _isLoading.value = true
                 _error.value = null
                 val weatherData = repository.getWeatherForCity(city)
-                _weather.value = weatherData
+                _weather.value = mapToWeatherData(weatherData)
             } catch (e: Exception) {
                 _error.value = when {
                     e.message?.contains("Unable to resolve host") == true -> 

@@ -42,3 +42,10 @@ Zarządza lokalnym przechowywaniem danych:
 - Coroutines
 - LiveData
 - Material3 Design
+
+## Konfiguracja
+### Klucz API
+Aplikacja wymaga klucza API OpenWeatherMap. Klucz jest konfigurowany poprzez zmienną środowiskową `OW_KEY` w pliku `local.properties`:
+```properties
+OW_KEY=twój_klucz_api
+```

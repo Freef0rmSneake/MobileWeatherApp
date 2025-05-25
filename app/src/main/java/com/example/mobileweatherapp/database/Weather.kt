@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "weather_cache")
-data class Weather(
+internal data class Weather(
     @PrimaryKey
     val cityName: String,
     val temperature: Float,

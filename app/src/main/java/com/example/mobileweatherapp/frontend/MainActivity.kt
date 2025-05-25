@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import com.example.mobileweatherapp.backend.WeatherViewModel
-import com.example.mobileweatherapp.database.Weather
+import com.example.mobileweatherapp.frontend.model.WeatherData
 
 // Lista 10 największych miast w Polsce
 val polskieMiasta = listOf(
@@ -128,7 +128,7 @@ fun WeatherScreen(viewModel: WeatherViewModel) {
 
 // Komponent, który wyświetla szczegóły pogodowe
 @Composable
-fun WeatherContent(weather: Weather) {
+fun WeatherContent(weather: WeatherData) {
     Column(
         modifier = Modifier
             .fillMaxWidth()

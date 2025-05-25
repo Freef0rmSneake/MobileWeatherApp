@@ -31,10 +31,14 @@ private data class WeatherDescription(
     val icon: String
 )
 
-class WeatherRepository(
+internal class WeatherRepository(
     private val weatherDao: WeatherDao,
     private val apiClient: HttpClient
 ) {
+    companion object {
+        private const val TAG = "WeatherRepository"
+    }
+
     suspend fun getWeatherForCity(city: String): Weather {
         return try {
             // Próba pobrania świeżych danych z API
@@ -49,11 +53,11 @@ class WeatherRepository(
             saveToCache(weather)
             weather
         } catch (e: Exception) {
-            Log.e("WeatherRepository", "Błąd API: ${e.message}")
+            Log.e(TAG, "Błąd API: ${e.message}")
             // W przypadku błędu, próba pobrania danych z cache
             val cached = weatherDao.getWeatherForCity(city)
             if (cached != null) {
-                Log.d("WeatherRepository", "Używam danych z cache dla miasta $city")
+                Log.d(TAG, "Używam danych z cache dla miasta $city")
                 cached
             } else {
                 throw e
@@ -65,7 +69,7 @@ class WeatherRepository(
         try {
             weatherDao.insertWeather(weather)
         } catch (e: Exception) {
-            Log.e("WeatherRepository", "Błąd zapisu do cache: ${e.message}")
+            Log.e(TAG, "Błąd zapisu do cache: ${e.message}")
         }
     }
 
@@ -74,7 +78,7 @@ class WeatherRepository(
             parameter("q", city)
             parameter("units", "metric")
             parameter("appid", BuildConfig.OW_KEY)
-            parameter("lang", "pl") // Dodanie parametru języka polskiego
+            parameter("lang", "pl")
             contentType(ContentType.Application.Json)
         }.body()
     }
