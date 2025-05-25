@@ -1,4 +1,4 @@
-package com.example.mobileweatherapp.ui.theme
+package com.example.mobileweatherapp.frontend.theme
 
 import android.app.Activity
 import android.os.Build
@@ -55,4 +55,4 @@ fun MobileWeatherAppTheme(
         typography = Typography,
         content = content
     )
-}
+} 

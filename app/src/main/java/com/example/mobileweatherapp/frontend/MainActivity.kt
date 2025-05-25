@@ -1,4 +1,4 @@
-package com.example.mobileweatherapp
+package com.example.mobileweatherapp.frontend
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -12,9 +12,12 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider
+import com.example.mobileweatherapp.backend.WeatherViewModel
+import com.example.mobileweatherapp.database.Weather
 
 // Lista 10 największych miast w Polsce
-val polishCities = listOf(
+val polskieMiasta = listOf(
     "Warszawa",
     "Kraków",
     "Łódź",
@@ -29,8 +32,9 @@ val polishCities = listOf(
 
 // Główna aktywność aplikacji
 class MainActivity : ComponentActivity() {
-    // ViewModel do komunikacji z danymi
-    private val viewModel: WeatherViewModel by viewModels()
+    private val viewModel: WeatherViewModel by viewModels { 
+        ViewModelProvider.AndroidViewModelFactory(application) 
+    }
 
     // Funkcja onCreate jest wywoływana podczas tworzenia aktywności
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,7 +58,7 @@ fun WeatherScreen(viewModel: WeatherViewModel) {
     val weather by viewModel.weather.observeAsState()
     val isLoading by viewModel.isLoading.observeAsState(initial = false)
     val error by viewModel.error.observeAsState()
-    var selectedCity by remember { mutableStateOf(polishCities[0]) }
+    var selectedCity by remember { mutableStateOf(polskieMiasta[0]) }
     var showDialog by remember { mutableStateOf(false) }
 
     Column(
@@ -69,16 +73,16 @@ fun WeatherScreen(viewModel: WeatherViewModel) {
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
         ) {
-            Text(text = selectedCity)
+            Text(text = "Wybrane miasto: $selectedCity")
         }
 
         if (showDialog) {
             AlertDialog(
                 onDismissRequest = { showDialog = false },
-                title = { Text("Wybierz miasto") },
+                title = { Text(text = "Wybierz miasto") },
                 text = {
                     Column {
-                        polishCities.forEach { city ->
+                        polskieMiasta.forEach { city ->
                             Text(
                                 text = city,
                                 modifier = Modifier
@@ -96,7 +100,7 @@ fun WeatherScreen(viewModel: WeatherViewModel) {
                 confirmButton = { },
                 dismissButton = {
                     TextButton(onClick = { showDialog = false }) {
-                        Text("Anuluj")
+                        Text(text = "Anuluj")
                     }
                 }
             )
@@ -110,7 +114,7 @@ fun WeatherScreen(viewModel: WeatherViewModel) {
             }
             error != null -> {
                 Text(
-                    text = error ?: "",
+                    text = "Wystąpił błąd: ${error ?: ""}",
                     color = MaterialTheme.colorScheme.error,
                     modifier = Modifier.padding(16.dp)
                 )
@@ -124,7 +128,7 @@ fun WeatherScreen(viewModel: WeatherViewModel) {
 
 // Komponent, który wyświetla szczegóły pogodowe
 @Composable
-fun WeatherContent(weather: WeatherResponse) {
+fun WeatherContent(weather: Weather) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -133,12 +137,15 @@ fun WeatherContent(weather: WeatherResponse) {
         verticalArrangement = Arrangement.Center
     ) {
         // Nazwa miasta
-        Text("Miasto: ${weather.name}", style = MaterialTheme.typography.titleLarge)
+        Text(
+            text = "Miasto: ${weather.cityName}",
+            style = MaterialTheme.typography.titleLarge
+        )
         Spacer(modifier = Modifier.height(12.dp)) // Odstęp między elementami
         // Temperatura
-        Text("Temperatura: ${weather.main.temp}°C")
+        Text(text = "Temperatura: ${weather.temperature}°C")
         Spacer(modifier = Modifier.height(8.dp)) // Odstęp
         // Opis pogody
-        Text("Opis: ${weather.weather.firstOrNull()?.description ?: "-"}")
+        Text(text = "Opis: ${weather.description}")
     }
-}
+} 
