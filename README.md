@@ -25,6 +25,25 @@ Zarządza lokalnym przechowywaniem danych:
 - `WeatherDatabase.kt`: Konfiguracja bazy danych Room
 - Zapewnia wsparcie trybu offline z 24-godzinnym cache
 
+## Pomysły do zrobienia w UI/UX/FRONTEND
+
+### Komponenty do Implementacji
+1. Ekran Główny
+   - Karta pogody z animowanymi przejściami
+   - Wskaźnik aktualnej temperatury w stylu Material3
+   - Animowana ikona stanu pogody
+   - Wskaźnik odświeżania danych
+
+2. Dialog Wyboru Miasta
+   - Lista 10 największych miast z miniaturami
+   - Wyszukiwarka z autouzupełnianiem
+   - Animacje przejść między miastami
+
+3. Stany Aplikacji
+   - Ekran ładowania z animacją
+   - Ekran błędu z przyjaznym komunikatem
+   - Stan braku połączenia z informacją o trybie offline
+
 ## Funkcje
 - Wyświetlanie pogody dla 10 największych miast Polski
 - Wybór miasta przez okno dialogowe
