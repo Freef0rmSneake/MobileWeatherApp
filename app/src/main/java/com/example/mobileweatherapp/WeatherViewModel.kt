@@ -21,6 +21,12 @@ class WeatherViewModel : ViewModel() {
     private val _weather = MutableLiveData<WeatherResponse?>()
     val weather: LiveData<WeatherResponse?> = _weather
 
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+
+    private val _error = MutableLiveData<String?>()
+    val error: LiveData<String?> = _error
+
     // Inicjalizacja Ktor Clienta, który będzie używany do zapytań HTTP
     private val client = HttpClient(OkHttp) {
         install(ContentNegotiation) {
@@ -33,6 +39,9 @@ class WeatherViewModel : ViewModel() {
         // Używamy viewModelScope, aby uruchomić zapytanie w tle
         viewModelScope.launch {
             try {
+                _isLoading.postValue(true)
+                _error.postValue(null)
+                
                 // Wysyłamy zapytanie do OpenWeather API
                 val response: WeatherResponse = client.get("https://api.openweathermap.org/data/2.5/weather") {
                     parameter("q", city)
@@ -45,6 +54,10 @@ class WeatherViewModel : ViewModel() {
                 _weather.postValue(response)
             } catch (e: Exception) {
                 Log.e("WeatherViewModel", "Błąd: ${e.message}")
+                _error.postValue("Nie udało się pobrać danych dla miasta: $city")
+                _weather.postValue(null)
+            } finally {
+                _isLoading.postValue(false)
             }
         }
     }

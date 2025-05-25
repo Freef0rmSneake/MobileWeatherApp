@@ -11,7 +11,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 // Lista 10 największych miast w Polsce
@@ -53,6 +52,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun WeatherScreen(viewModel: WeatherViewModel) {
     val weather by viewModel.weather.observeAsState()
+    val isLoading by viewModel.isLoading.observeAsState(initial = false)
+    val error by viewModel.error.observeAsState()
     var selectedCity by remember { mutableStateOf(polishCities[0]) }
     var showDialog by remember { mutableStateOf(false) }
 
@@ -62,7 +63,6 @@ fun WeatherScreen(viewModel: WeatherViewModel) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // City selector button
         Button(
             onClick = { showDialog = true },
             modifier = Modifier
@@ -104,11 +104,20 @@ fun WeatherScreen(viewModel: WeatherViewModel) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Wyświetlanie danych pogodowych
-        if (weather == null) {
-            CircularProgressIndicator()
-        } else {
-            WeatherContent(weather = weather!!)
+        when {
+            isLoading -> {
+                CircularProgressIndicator()
+            }
+            error != null -> {
+                Text(
+                    text = error ?: "",
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+            weather != null -> {
+                WeatherContent(weather = weather!!)
+            }
         }
     }
 }
