@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -12,6 +13,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+
+// Lista 10 największych miast w Polsce
+val polishCities = listOf(
+    "Warszawa",
+    "Kraków",
+    "Łódź",
+    "Wrocław",
+    "Poznań",
+    "Gdańsk",
+    "Szczecin",
+    "Bydgoszcz",
+    "Lublin",
+    "Katowice"
+)
 
 // Główna aktywność aplikacji
 class MainActivity : ComponentActivity() {
@@ -29,25 +44,72 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        // Funkcja pobierająca dane o pogodzie dla Wrocławia
-        viewModel.getWeatherData("Wrocław")
+        // Domyślnie pokazujemy pogodę dla Warszawy
+        viewModel.getWeatherData("Warszawa")
     }
 }
 
 // Komponent, który wyświetla dane pogodowe
 @Composable
 fun WeatherScreen(viewModel: WeatherViewModel) {
-    // Dane pogodowe z LiveData ViewModelu pobierają się
     val weather by viewModel.weather.observeAsState()
+    var selectedCity by remember { mutableStateOf(polishCities[0]) }
+    var showDialog by remember { mutableStateOf(false) }
 
-    // Jeśli dane są jeszcze ładowane (null), wyświetla się kółko ładowania
-    if (weather == null) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator() // kółko ładowania
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // City selector button
+        Button(
+            onClick = { showDialog = true },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+        ) {
+            Text(text = selectedCity)
         }
-    } else {
-        // Gdy gotowe, dane się wyświetlają
-        WeatherContent(weather = weather!!)
+
+        if (showDialog) {
+            AlertDialog(
+                onDismissRequest = { showDialog = false },
+                title = { Text("Wybierz miasto") },
+                text = {
+                    Column {
+                        polishCities.forEach { city ->
+                            Text(
+                                text = city,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        selectedCity = city
+                                        showDialog = false
+                                        viewModel.getWeatherData(city)
+                                    }
+                                    .padding(vertical = 12.dp, horizontal = 16.dp)
+                            )
+                        }
+                    }
+                },
+                confirmButton = { },
+                dismissButton = {
+                    TextButton(onClick = { showDialog = false }) {
+                        Text("Anuluj")
+                    }
+                }
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Wyświetlanie danych pogodowych
+        if (weather == null) {
+            CircularProgressIndicator()
+        } else {
+            WeatherContent(weather = weather!!)
+        }
     }
 }
 
@@ -56,8 +118,8 @@ fun WeatherScreen(viewModel: WeatherViewModel) {
 fun WeatherContent(weather: WeatherResponse) {
     Column(
         modifier = Modifier
-            .fillMaxSize() // Wypełnia całą dostępna przestrzeń
-            .padding(24.dp), // Dodajemy odstępy
+            .fillMaxWidth()
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -69,20 +131,5 @@ fun WeatherContent(weather: WeatherResponse) {
         Spacer(modifier = Modifier.height(8.dp)) // Odstęp
         // Opis pogody
         Text("Opis: ${weather.weather.firstOrNull()?.description ?: "-"}")
-    }
-}
-
-// Przykładowy widok
-@Preview(showBackground = true)
-@Composable
-fun PreviewWeatherScreen() {
-    // Przykładowe dane pogodowe
-    val sampleWeather = WeatherResponse(
-        name = "Wrocław",
-        main = Main(temp = 22.5f),
-        weather = listOf(Weather(description = "słonecznie", icon = "01d"))
-    )
-    MaterialTheme {
-        WeatherContent(weather = sampleWeather)
     }
 }
