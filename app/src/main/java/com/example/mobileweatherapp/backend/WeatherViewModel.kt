@@ -14,10 +14,8 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.gson.*
 import kotlinx.coroutines.launch
 
-// ViewModel do zarządzania stanem aplikacji i pobierania danych pogodowych
 class WeatherViewModel(application: Application) : AndroidViewModel(application) {
 
-    // LiveData przechowujące dane o pogodzie, które mogą być obserwowane w UI
     private val _weather = MutableLiveData<WeatherData?>()
     val weather: LiveData<WeatherData?> = _weather
 
@@ -27,10 +25,9 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
 
-    // Inicjalizacja Ktor Clienta, który będzie używany do zapytań HTTP
     private val client = HttpClient(OkHttp) {
         install(ContentNegotiation) {
-            gson()  // Używamy GSON do serializacji i deserializacji JSON
+            gson()
         }
     }
 
@@ -41,7 +38,6 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         val weatherDao = app.database.weatherDao()
         repository = WeatherRepository(weatherDao, client)
         
-        // Clear old cache on startup
         viewModelScope.launch {
             repository.clearOldCache()
         }

@@ -41,7 +41,6 @@ internal class WeatherRepository(
 
     suspend fun getWeatherForCity(city: String): Weather {
         return try {
-            // Próba pobrania świeżych danych z API
             val apiResponse = fetchFromApi(city)
             val weather = Weather(
                 cityName = apiResponse.name,
@@ -49,12 +48,10 @@ internal class WeatherRepository(
                 description = apiResponse.weather.firstOrNull()?.description ?: "",
                 icon = apiResponse.weather.firstOrNull()?.icon ?: ""
             )
-            // Zapisanie odpowiedzi w cache
             saveToCache(weather)
             weather
         } catch (e: Exception) {
             Log.e(TAG, "Błąd API: ${e.message}")
-            // W przypadku błędu, próba pobrania danych z cache
             val cached = weatherDao.getWeatherForCity(city)
             if (cached != null) {
                 Log.d(TAG, "Używam danych z cache dla miasta $city")
@@ -83,7 +80,7 @@ internal class WeatherRepository(
         }.body()
     }
 
-    suspend fun clearOldCache(maxAgeMs: Long = 24 * 60 * 60 * 1000) { // 24 godziny
+    suspend fun clearOldCache(maxAgeMs: Long = 24 * 60 * 60 * 1000) {
         val threshold = System.currentTimeMillis() - maxAgeMs
         weatherDao.deleteOldCache(threshold)
     }

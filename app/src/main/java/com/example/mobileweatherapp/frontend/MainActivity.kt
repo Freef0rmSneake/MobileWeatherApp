@@ -16,7 +16,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.mobileweatherapp.backend.WeatherViewModel
 import com.example.mobileweatherapp.frontend.model.WeatherData
 
-// Lista 10 największych miast w Polsce
+
 val polskieMiasta = listOf(
     "Warszawa",
     "Kraków",
@@ -30,29 +30,25 @@ val polskieMiasta = listOf(
     "Katowice"
 )
 
-// Główna aktywność aplikacji
+
 class MainActivity : ComponentActivity() {
     private val viewModel: WeatherViewModel by viewModels { 
         ViewModelProvider.AndroidViewModelFactory(application) 
     }
 
-    // Funkcja onCreate jest wywoływana podczas tworzenia aktywności
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Wygląd aplikacji przy użyciu Jetpack Compose
         setContent {
             MaterialTheme {
-                WeatherScreen(viewModel) // Pokazujemy ekran pogodowy
+                WeatherScreen(viewModel)
             }
         }
 
-        // Domyślnie pokazujemy pogodę dla Warszawy
         viewModel.getWeatherData("Warszawa")
     }
 }
 
-// Komponent, który wyświetla dane pogodowe
 @Composable
 fun WeatherScreen(viewModel: WeatherViewModel) {
     val weather by viewModel.weather.observeAsState()
@@ -126,7 +122,6 @@ fun WeatherScreen(viewModel: WeatherViewModel) {
     }
 }
 
-// Komponent, który wyświetla szczegóły pogodowe
 @Composable
 fun WeatherContent(weather: WeatherData) {
     Column(
@@ -136,16 +131,13 @@ fun WeatherContent(weather: WeatherData) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Nazwa miasta
         Text(
             text = "Miasto: ${weather.cityName}",
             style = MaterialTheme.typography.titleLarge
         )
-        Spacer(modifier = Modifier.height(12.dp)) // Odstęp między elementami
-        // Temperatura
+        Spacer(modifier = Modifier.height(12.dp))
         Text(text = "Temperatura: ${weather.temperature}°C")
-        Spacer(modifier = Modifier.height(8.dp)) // Odstęp
-        // Opis pogody
+        Spacer(modifier = Modifier.height(8.dp))
         Text(text = "Opis: ${weather.description}")
     }
 } 
