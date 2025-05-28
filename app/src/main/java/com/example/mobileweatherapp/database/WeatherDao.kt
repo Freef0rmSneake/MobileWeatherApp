@@ -5,10 +5,10 @@ import androidx.room.*
 @Dao
 internal interface WeatherDao {
     @Query("SELECT * FROM weather_cache WHERE cityName = :city")
-    suspend fun getWeatherForCity(city: String): Weather?
+    suspend fun getWeatherForCity(city: String): WeatherData?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertWeather(weather: Weather)
+    suspend fun insertWeather(weather: WeatherData)
 
     @Query("DELETE FROM weather_cache WHERE cityName = :city")
     suspend fun deleteWeatherForCity(city: String)

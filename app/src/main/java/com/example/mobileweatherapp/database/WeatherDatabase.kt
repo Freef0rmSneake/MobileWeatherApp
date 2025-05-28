@@ -4,8 +4,10 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 
-@Database(entities = [Weather::class], version = 1)
+@Database(entities = [WeatherData::class], version = 1)
+@TypeConverters(Converters::class)
 abstract class WeatherDatabase : RoomDatabase() {
     internal abstract fun weatherDao(): WeatherDao
 
@@ -20,8 +22,8 @@ abstract class WeatherDatabase : RoomDatabase() {
                     WeatherDatabase::class.java,
                     "weather_database"
                 )
-                .fallbackToDestructiveMigration(true)
-                .build()
+                    .fallbackToDestructiveMigration(true)
+                    .build()
                 INSTANCE = instance
                 instance
             }

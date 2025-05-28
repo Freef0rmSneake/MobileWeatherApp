@@ -83,6 +83,10 @@ dependencies {
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.serialization.gson)
 
+    //Icons
+    implementation("br.com.devsrsouza.compose.icons:feather:1.1.1")
+    implementation("io.coil-kt:coil-compose:2.6.0")
+
     // Room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
